@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    restart: always
+    environment:
+      DB_HOST: "mysql"
+      DB_PASS: "12345678"
+      DB_NAME: "tech_challenge"
+      DB_USER: "root"
+      DB_PORT: "3306"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - tech-challenge
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'tech_challenge'
+      MYSQL_ROOT_PASSWORD: '12345678'
+    ports:
+      - "3306:3306"
+    volumes:
+      - './docker/db/data:/var/lib/mysql'
+      - './docker/db/my.cnf:/etc/mysql/conf.d/my.cnf'
+      - './docker/db/sql:/docker-entrypoint-initdb.d'
+    networks:
+      - tech-challenge
+volumes:
+  docker:
+networks:
+  tech-challenge: 
+    driver: bridge
