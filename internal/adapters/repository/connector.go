@@ -1,81 +1,62 @@
 package repository
 
 import (
-	"fiap-tech-challenge-pedidos/internal/core/domain"
+	"context"
 	"fmt"
-	"os"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/gommon/log"
-	"xorm.io/xorm"
-	"xorm.io/xorm/names"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"os"
 )
 
 type DBConnector interface {
-	GetORM() *xorm.Engine
+	GetDB() *mongo.Database
 	Close()
 }
 
-type MySQLConnector struct {
-	engine *xorm.Engine
+type MongoConnector struct {
+	engine *mongo.Client
+	db     *mongo.Database
 }
 
-func (m MySQLConnector) GetORM() *xorm.Engine {
-	return m.engine
+func (m *MongoConnector) GetDB() *mongo.Database {
+	return m.db
 }
 
-func (m MySQLConnector) Close() {
-	err := m.engine.Close()
+func (m *MongoConnector) Close() {
+	// TODO change ctx
+	err := m.engine.Disconnect(context.TODO())
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 }
 
 func NewMySQLConnector() DBConnector {
-	// TODO put in env vars
 	var (
-		dbName     string
-		dbPassword string
-		dbUser     string
-		dbPort     string
-		dbHost     string
-		err        error
+		dbURI  = os.Getenv("DB_URI")
+		dbName = os.Getenv("DB_NAME")
+		err    error
 	)
 
-	dbHost = os.Getenv("DB_HOST")
-	dbPassword = os.Getenv("DB_PASS")
-	dbName = os.Getenv("DB_NAME")
-	dbUser = os.Getenv("DB_USER")
-	dbPort = os.Getenv("DB_PORT")
-	if dbHost == "" || dbPassword == "" || dbName == "" || dbUser == "" || dbPort == "" {
-		log.Fatal("make sure your db variable are configured properly")
-	}
-
-	engine, err := xorm.NewEngine("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", dbUser, dbPassword, dbHost, dbPort, dbName))
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(dbURI).SetServerAPIOptions(serverAPI)
+	// Create a new client and connect to the server
+	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
 		panic(err)
 	}
-	engine.ShowSQL(true) // TODO it should come from env
-	//engine.Logger().SetLevel(log.DEBUG)
-	engine.SetMapper(names.SnakeMapper{})
-	if err = syncTables(engine); err != nil {
-		log.Fatal("failed to sync tables ", err.Error())
-	}
 
-	return &MySQLConnector{
-		engine: engine,
+	db := client.Database(dbName)
+	// Send a ping to confirm a successful connection
+	var result bson.M
+	if err = db.RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
+		panic(err)
 	}
-}
-
-// syncTables allows us to synchronize our tables on the databases: create, updates, table, columns, indexes
-func syncTables(engine *xorm.Engine) error {
-	if err := engine.Sync(
-		new(domain.PedidoDTO),
-		new(domain.PedidoProduto),
-		new(domain.Fila),
-	); err != nil {
-		return err
+	fmt.Println("You successfully connected to MongoDB!")
+	return &MongoConnector{
+		engine: client,
+		db:     db,
 	}
-
-	return nil
 }

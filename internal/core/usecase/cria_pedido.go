@@ -17,16 +17,9 @@ type cadastraPedido struct {
 }
 
 func (uc cadastraPedido) Cadastra(ctx context.Context, req *domain.PedidoRequest) (*domain.PedidoResponse, error) {
-
 	dto, err := uc.repo.Insere(ctx, uc.mapperPedido.MapReqToDTO(req))
 	if err != nil {
 		return nil, err
-	}
-	pedidoProdutos := make([]*domain.PedidoProduto, len(req.ProdutoIds))
-	for i, id := range req.ProdutoIds {
-		pedidoProdutos[i] = &domain.PedidoProduto{
-			ProdutoId: id,
-		}
 	}
 
 	return uc.mapperPedido.MapDTOToResponse(dto), err

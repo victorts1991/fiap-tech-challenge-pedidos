@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -15,20 +16,19 @@ const (
 )
 
 type PedidoRequest struct {
-	ClienteId  int64   `json:"cliente_id" validate:"required"`
-	ProdutoIds []int64 `json:"produtos" validate:"required"`
-	Observacao string  `json:"observacao"`
+	ClienteId  int64    `json:"cliente_id" validate:"required"`
+	ProdutoIds []string `json:"produtos" validate:"required"`
+	Observacao string   `json:"observacao"`
 }
 
 type PedidoDTO struct {
-	Id         int64      `xorm:"pk autoincr 'pedido_id'"`
-	ClienteId  int64      `xorm:"'cliente_id'"`
-	Produtos   []*Produto `xorm:"-"`
-	ProdutoIDS string     `xorm:"'produtos'"`
-	Status     string     `xorm:"'status'"`
-	Observacao string
-	CreatedAt  time.Time `xorm:"created"`
-	UpdatedAt  time.Time `xorm:"updated"`
+	ID         primitive.ObjectID `bson:"_id"`
+	ClienteId  int64              `bson:"cliente_id"`
+	Produtos   []string           `bson:"produtos"`
+	Status     string             `bson:"status"`
+	Observacao string             `bson:"observacao"`
+	CreatedAt  time.Time          `bson:"created_at"`
+	UpdatedAt  time.Time          `bson:"updated_at"`
 }
 
 type PedidosDTO []*PedidoDTO
@@ -44,15 +44,8 @@ func (a PedidosDTO) Less(i, j int) bool {
 
 }
 
-type PedidoProduto struct {
-	Id        int64
-	PedidoId  int64     `xorm:"index"`
-	ProdutoId int64     `xorm:"index"`
-	CreatedAt time.Time `json:"created_at" xorm:"created"`
-}
-
 func (dto *PedidoDTO) TableName() string {
-	return "pedido"
+	return "pedidos"
 }
 
 type PedidoResponse struct {
@@ -60,13 +53,13 @@ type PedidoResponse struct {
 }
 
 type Pedido struct {
-	Id         int64      `json:"id"`
-	ClienteId  int64      `json:"cliente_id"`
-	Status     string     `json:"status"`
-	Produtos   []*Produto `json:"produtos,omitempty"`
-	Observacao string     `json:"observacao"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	Id         primitive.ObjectID `json:"id"`
+	ClienteId  int64              `json:"cliente_id"`
+	Status     string             `json:"status"`
+	Produtos   []string           `json:"produtos"`
+	Observacao string             `json:"observacao"`
+	CreatedAt  time.Time          `json:"created_at"`
+	UpdatedAt  time.Time          `json:"updated_at"`
 }
 
 type Fila struct {

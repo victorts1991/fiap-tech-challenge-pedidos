@@ -7,7 +7,6 @@ import (
 	"fiap-tech-challenge-pedidos/internal/core/domain"
 	"fiap-tech-challenge-pedidos/internal/core/usecase/mapper"
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -70,8 +69,6 @@ func (uc *listaPedido) ListaTodos(ctx context.Context) ([]*domain.Pedido, error)
 	if err != nil {
 		return nil, err
 	}
-
-	sort.Sort(domain.PedidosDTO(pedidos))
 
 	return uc.mapperPedido.MapDTOToModels(pedidos), nil
 }

@@ -47,11 +47,11 @@ func NewPedido(validator util.Validator,
 }
 
 func (h *Pedido) RegistraRotasPedido(server *echo.Echo) {
-	server.POST("/pedido", h.cadastra, h.tokenJwt.VerifyToken)
-	server.GET("/pedidos/:statuses", h.listaPorStatus)
+	server.POST("/pedido", h.cadastra) //, h.tokenJwt.VerifyToken)
+	//server.GET("/pedidos/:statuses", h.listaPorStatus)
 	server.GET("/pedidos", h.listaTodos)
-	server.GET("/pedido/detail/:id", h.listaDetail, h.tokenJwt.VerifyToken)
-	server.PATCH("/pedido/:id", h.atualizaStatus)
+	//server.GET("/pedido/detail/:id", h.listaDetail, h.tokenJwt.VerifyToken)
+	//server.PATCH("/pedido/:id", h.atualizaStatus)
 }
 
 // cadastra godoc
@@ -179,7 +179,6 @@ func (h *Pedido) listaDetail(ctx echo.Context) error {
 // @Success 200 {array} domain.Pedido
 // @Router /pedidos [get]
 func (h *Pedido) listaTodos(ctx echo.Context) error {
-
 	pedidos, err := h.listaTodosUC.ListaTodos(ctx.Request().Context())
 	if err != nil {
 		return serverErr.HandleError(ctx, errorx.Cast(err))

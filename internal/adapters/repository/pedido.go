@@ -2,18 +2,17 @@ package repository
 
 import (
 	"context"
-	"fiap-tech-challenge-api/internal/core/commons"
-	"fiap-tech-challenge-api/internal/core/domain"
-	"fmt"
-
-	"github.com/joomcode/errorx"
-	"xorm.io/xorm"
+	"fiap-tech-challenge-pedidos/internal/core/domain"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
-const tableNamePedido string = "pedido"
+const tableNamePedido string = "pedidos"
 
 type pedido struct {
-	session *xorm.Session
+	session *mongo.Collection
 }
 
 type PedidoRepo interface {
@@ -25,15 +24,19 @@ type PedidoRepo interface {
 }
 
 func NewPedidoRepo(connector DBConnector) PedidoRepo {
-	session := connector.GetORM().Table(tableNamePedido)
+	session := connector.GetDB().Collection(tableNamePedido)
 	return &pedido{
 		session: session,
 	}
 }
 
 func (p *pedido) Insere(ctx context.Context, pedido *domain.PedidoDTO) (*domain.PedidoDTO, error) {
-	pedido.Status = domain.StatusAguardandoPagamento
-	if _, err := p.session.Context(ctx).Insert(pedido); err != nil {
+	pedido.ID = primitive.NewObjectID()
+	now := time.Now()
+	pedido.CreatedAt = now
+	pedido.UpdatedAt = now
+	_, err := p.session.InsertOne(ctx, &pedido)
+	if err != nil {
 		return nil, err
 	}
 
@@ -42,47 +45,32 @@ func (p *pedido) Insere(ctx context.Context, pedido *domain.PedidoDTO) (*domain.
 
 func (p *pedido) PesquisaPorStatus(ctx context.Context, statuses []string) ([]*domain.PedidoDTO, error) {
 	pedidos := make([]*domain.PedidoDTO, 0)
-	err := p.session.Context(ctx).In("status", statuses).Find(&pedidos)
-	if err != nil {
-		return nil, errorx.InternalError.New(err.Error())
-	}
 
 	return pedidos, nil
 }
 
 func (p *pedido) AtualizaStatus(ctx context.Context, status string, id int64) error {
-	_, err := p.session.Context(ctx).ID(id).Update(&domain.PedidoDTO{Status: status})
-	if err != nil {
-		return errorx.InternalError.New(err.Error())
-	}
-
 	return nil
 }
 
 func (p *pedido) PesquisaPorID(ctx context.Context, id int64) (*domain.PedidoDTO, error) {
-	dto := &domain.PedidoDTO{
-		Id: id,
-	}
-
-	has, err := p.session.Context(ctx).Get(dto)
-	if err != nil {
-		return nil, errorx.InternalError.New(err.Error())
-	}
-
-	if !has {
-		return nil, commons.BadRequest.New(fmt.Sprintf("pedido %d não existe", id))
-	}
+	dto := &domain.PedidoDTO{}
 
 	return dto, nil
 }
 
 func (p *pedido) PesquisaTodos(ctx context.Context) ([]*domain.PedidoDTO, error) {
 	pedidos := make([]*domain.PedidoDTO, 0)
-	err := p.session.Context(ctx).Where("status <> ?", "finalizado").Find(&pedidos)
+	filter := bson.M{}
+	cur, err := p.session.Find(ctx, filter)
 	if err != nil {
-		return nil, errorx.InternalError.New(err.Error())
+		return nil, err
+	}
+
+	err = cur.All(ctx, &pedidos)
+	if err != nil {
+		return nil, err
 	}
 
 	return pedidos, nil
-
 }

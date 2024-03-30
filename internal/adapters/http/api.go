@@ -24,8 +24,8 @@ type Server struct {
 
 // NewAPIServer creates the main http with all configurations necessary
 func NewAPIServer(healthHandler *handlers.HealthCheck, pedidoHandler *handlers.Pedido) *Server {
-	host := ":3000"
-	appName := "tech-challenge-api"
+	host := ":3001"
+	appName := "tech-challenge-pedidos"
 	app := echo.New()
 
 	app.HideBanner = true

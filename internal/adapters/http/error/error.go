@@ -1,7 +1,7 @@
 package error
 
 import (
-	"fiap-tech-challenge-api/internal/core/commons"
+	"fiap-tech-challenge-pedidos/internal/core/commons"
 	"github.com/joomcode/errorx"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/labstack/echo/v4"

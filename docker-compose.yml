@@ -1,37 +1,23 @@
 version: '3.9'
 services:
-  app:
-    build: .
+
+  mongo:
+    image: mongo
+    container_name: db
     restart: always
-    environment:
-      DB_HOST: "mysql"
-      DB_PASS: "12345678"
-      DB_NAME: "tech_challenge"
-      DB_USER: "root"
-      DB_PORT: "3306"
     ports:
-      - "3000:3000"
-    depends_on:
-      - mysql
-    networks:
-      - tech-challenge
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tech_challenge
+      MONGO_INITDB_ROOT_PASSWORD: tech_challenge
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
     restart: always
-    environment:
-      MYSQL_DATABASE: 'tech_challenge'
-      MYSQL_ROOT_PASSWORD: '12345678'
     ports:
-      - "3306:3306"
-    volumes:
-      - './docker/db/data:/var/lib/mysql'
-      - './docker/db/my.cnf:/etc/mysql/conf.d/my.cnf'
-      - './docker/db/sql:/docker-entrypoint-initdb.d'
-    networks:
-      - tech-challenge
-volumes:
-  docker:
-networks:
-  tech-challenge: 
-    driver: bridge
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: tech_challenge
+      ME_CONFIG_MONGODB_ADMINPASSWORD: tech_challenge
+      ME_CONFIG_MONGODB_URL: mongodb://tech_challenge:tech_challenge@mongo:27017/
