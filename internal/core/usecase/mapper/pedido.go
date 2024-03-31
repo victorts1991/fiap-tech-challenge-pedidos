@@ -17,6 +17,9 @@ type pedido struct {
 func (p pedido) MapDTOToResponse(dto *domain.PedidoDTO) *domain.PedidoResponse {
 	return &domain.PedidoResponse{
 		Pedido: &domain.Pedido{
+			Id:         dto.ID,
+			ClienteId:  dto.ClienteId,
+			Produtos:   dto.Produtos,
 			Status:     dto.Status,
 			Observacao: dto.Observacao,
 			CreatedAt:  dto.CreatedAt,

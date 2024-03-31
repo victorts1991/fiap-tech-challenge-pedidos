@@ -5,10 +5,11 @@ import (
 	"fiap-tech-challenge-pedidos/internal/adapters/repository"
 	"fiap-tech-challenge-pedidos/internal/core/domain"
 	"fiap-tech-challenge-pedidos/internal/core/usecase/mapper"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type PegarDetalhePedido interface {
-	Pesquisa(ctx context.Context, id int64) (*domain.PedidoResponse, error)
+	Pesquisa(ctx context.Context, id primitive.ObjectID) (*domain.PedidoResponse, error)
 }
 
 type pegaDetalhePedido struct {
@@ -16,7 +17,7 @@ type pegaDetalhePedido struct {
 	mapperPedido mapper.Pedido
 }
 
-func (uc *pegaDetalhePedido) Pesquisa(ctx context.Context, id int64) (*domain.PedidoResponse, error) {
+func (uc *pegaDetalhePedido) Pesquisa(ctx context.Context, id primitive.ObjectID) (*domain.PedidoResponse, error) {
 	dto, err := uc.repo.PesquisaPorID(ctx, id)
 	if err != nil {
 		return nil, err

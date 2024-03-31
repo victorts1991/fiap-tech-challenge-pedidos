@@ -11,10 +11,13 @@ import (
 )
 
 var validStatusesSet = map[string]bool{
-	domain.StatusEmPreparacao: true,
-	domain.StatusFinalizado:   true,
-	domain.StatusPronto:       true,
-	domain.StatusRecebido:     true,
+	domain.StatusEmPreparacao:        true,
+	domain.StatusFinalizado:          true,
+	domain.StatusPronto:              true,
+	domain.StatusRecebido:            true,
+	domain.StatusAguardandoPagamento: true,
+	domain.StatusPagamentoRecusado:   true,
+	domain.StatusPagamentoAprovado:   true,
 }
 
 type ListarPedidos interface {

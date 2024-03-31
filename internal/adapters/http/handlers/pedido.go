@@ -8,8 +8,8 @@ import (
 	"fiap-tech-challenge-pedidos/internal/core/usecase"
 	"fiap-tech-challenge-pedidos/internal/util"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -48,10 +48,10 @@ func NewPedido(validator util.Validator,
 
 func (h *Pedido) RegistraRotasPedido(server *echo.Echo) {
 	server.POST("/pedido", h.cadastra) //, h.tokenJwt.VerifyToken)
-	//server.GET("/pedidos/:statuses", h.listaPorStatus)
+	server.GET("/pedidos/:statuses", h.listaPorStatus)
 	server.GET("/pedidos", h.listaTodos)
-	//server.GET("/pedido/detail/:id", h.listaDetail, h.tokenJwt.VerifyToken)
-	//server.PATCH("/pedido/:id", h.atualizaStatus)
+	server.GET("/pedido/detail/:id", h.listaDetail) //, h.tokenJwt.VerifyToken)
+	server.PATCH("/pedido/:id", h.atualizaStatus)
 }
 
 // cadastra godoc
@@ -125,8 +125,8 @@ func (h *Pedido) atualizaStatus(ctx echo.Context) error {
 		status struct {
 			Status string `json:"status"`
 		}
-		//pedidoID int
-		err error
+		pedidoID primitive.ObjectID
+		err      error
 	)
 
 	if err = ctx.Bind(&status); err != nil {
@@ -134,14 +134,14 @@ func (h *Pedido) atualizaStatus(ctx echo.Context) error {
 	}
 
 	id := ctx.Param("id")
-	if _, err = strconv.Atoi(id); err != nil {
+	if pedidoID, err = primitive.ObjectIDFromHex(id); err != nil {
 		return serverErr.HandleError(ctx, commons.BadRequest.New(fmt.Sprintf("%s não é um id válido", id)))
 	}
 
-	//err = h.atualizaStatusUC.Atualiza(ctx.Request().Context(), status.Status, int64(pedidoID))
-	//if err != nil {
-	//	return serverErr.HandleError(ctx, errorx.Cast(err))
-	//}
+	err = h.atualizaStatusUC.Atualiza(ctx.Request().Context(), status.Status, pedidoID)
+	if err != nil {
+		return serverErr.HandleError(ctx, errorx.Cast(err))
+	}
 
 	return ctx.JSON(http.StatusOK, status)
 }
@@ -156,16 +156,17 @@ func (h *Pedido) atualizaStatus(ctx echo.Context) error {
 // @Router /pedido/detail/{id} [get]
 func (h *Pedido) listaDetail(ctx echo.Context) error {
 	var (
-		pedidoID int
+		pedidoID primitive.ObjectID
 		err      error
 	)
 
 	id := ctx.Param("id")
-	if pedidoID, err = strconv.Atoi(id); err != nil {
-		return serverErr.HandleError(ctx, commons.BadRequest.New(fmt.Sprintf("%s não é um id válido", id)))
+
+	if pedidoID, err = primitive.ObjectIDFromHex(id); err != nil {
+		return serverErr.HandleError(ctx, commons.BadRequest.New(err.Error()))
 	}
 
-	pedido, err := h.pegaDetalhePedidoUC.Pesquisa(ctx.Request().Context(), int64(pedidoID))
+	pedido, err := h.pegaDetalhePedidoUC.Pesquisa(ctx.Request().Context(), pedidoID)
 	if err != nil {
 		return serverErr.HandleError(ctx, errorx.Cast(err))
 	}
