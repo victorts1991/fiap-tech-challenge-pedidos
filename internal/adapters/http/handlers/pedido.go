@@ -5,7 +5,7 @@ import (
 	"fiap-tech-challenge-pedidos/internal/adapters/http/middlewares/auth"
 	"fiap-tech-challenge-pedidos/internal/core/commons"
 	"fiap-tech-challenge-pedidos/internal/core/domain"
-	"fiap-tech-challenge-pedidos/internal/core/usecase"
+	"fiap-tech-challenge-pedidos/internal/core/usecases"
 	"fiap-tech-challenge-pedidos/internal/util"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,20 +19,20 @@ import (
 
 type Pedido struct {
 	validator           util.Validator
-	listaPorStatusUC    usecase.ListarPedidoPorStatus
-	listaTodosUC        usecase.ListarTodosPedidos
-	cadastraPedidoUC    usecase.CadastrarPedido
-	atualizaStatusUC    usecase.AtualizaStatusPedidoUC
-	pegaDetalhePedidoUC usecase.PegarDetalhePedido
+	listaPorStatusUC    usecases.ListarPedidoPorStatus
+	listaTodosUC        usecases.ListarTodosPedidos
+	cadastraPedidoUC    usecases.CadastrarPedido
+	atualizaStatusUC    usecases.AtualizaStatusPedidoUC
+	pegaDetalhePedidoUC usecases.PegarDetalhePedido
 	tokenJwt            auth.Token
 }
 
 func NewPedido(validator util.Validator,
-	listaPorStatusUC usecase.ListarPedidoPorStatus,
-	listaTodosUC usecase.ListarTodosPedidos,
-	cadastraPedidoUC usecase.CadastrarPedido,
-	atualizaStatusUC usecase.AtualizaStatusPedidoUC,
-	pegaDetalhePedidoUC usecase.PegarDetalhePedido,
+	listaPorStatusUC usecases.ListarPedidoPorStatus,
+	listaTodosUC usecases.ListarTodosPedidos,
+	cadastraPedidoUC usecases.CadastrarPedido,
+	atualizaStatusUC usecases.AtualizaStatusPedidoUC,
+	pegaDetalhePedidoUC usecases.PegarDetalhePedido,
 	tokenJwt auth.Token,
 ) *Pedido {
 	return &Pedido{

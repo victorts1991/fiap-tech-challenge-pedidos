@@ -8,8 +8,8 @@ import (
 	"fiap-tech-challenge-pedidos/internal/adapters/http/handlers"
 	"fiap-tech-challenge-pedidos/internal/adapters/http/middlewares/auth"
 	"fiap-tech-challenge-pedidos/internal/adapters/repository"
-	"fiap-tech-challenge-pedidos/internal/core/usecase"
-	"fiap-tech-challenge-pedidos/internal/core/usecase/mapper"
+	"fiap-tech-challenge-pedidos/internal/core/usecases"
+	"fiap-tech-challenge-pedidos/internal/core/usecases/mapper"
 	"fiap-tech-challenge-pedidos/internal/util"
 
 	"github.com/google/wire"
@@ -21,11 +21,11 @@ func InitializeWebServer() (*http.Server, error) {
 		repository.NewPedidoRepo,
 		auth.NewJwtToken,
 		mapper.NewPedidoMapper,
-		usecase.NewListaPedidoPorStatus,
-		usecase.NewListaTodosPedidos,
-		usecase.NewCadastraPedido,
-		usecase.NewAtualizaStatusPedidoUC,
-		usecase.NewPegaDetalhePedido,
+		usecases.NewListaPedidoPorStatus,
+		usecases.NewListaTodosPedidos,
+		usecases.NewCadastraPedido,
+		usecases.NewAtualizaStatusPedidoUC,
+		usecases.NewPegaDetalhePedido,
 		handlers.NewHealthCheck,
 		handlers.NewPedido,
 		http.NewAPIServer)

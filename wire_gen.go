@@ -11,8 +11,8 @@ import (
 	"fiap-tech-challenge-pedidos/internal/adapters/http/handlers"
 	"fiap-tech-challenge-pedidos/internal/adapters/http/middlewares/auth"
 	"fiap-tech-challenge-pedidos/internal/adapters/repository"
-	"fiap-tech-challenge-pedidos/internal/core/usecase"
-	"fiap-tech-challenge-pedidos/internal/core/usecase/mapper"
+	"fiap-tech-challenge-pedidos/internal/core/usecases"
+	"fiap-tech-challenge-pedidos/internal/core/usecases/mapper"
 	"fiap-tech-challenge-pedidos/internal/util"
 )
 
@@ -24,11 +24,11 @@ func InitializeWebServer() (*http.Server, error) {
 	dbConnector := repository.NewMySQLConnector()
 	pedidoRepo := repository.NewPedidoRepo(dbConnector)
 	pedido := mapper.NewPedidoMapper()
-	listarPedidoPorStatus := usecase.NewListaPedidoPorStatus(pedidoRepo, pedido)
-	listarTodosPedidos := usecase.NewListaTodosPedidos(pedidoRepo, pedido)
-	cadastrarPedido := usecase.NewCadastraPedido(pedidoRepo, pedido)
-	atualizaStatusPedidoUC := usecase.NewAtualizaStatusPedidoUC(pedidoRepo)
-	pegarDetalhePedido := usecase.NewPegaDetalhePedido(pedidoRepo, pedido)
+	listarPedidoPorStatus := usecases.NewListaPedidoPorStatus(pedidoRepo, pedido)
+	listarTodosPedidos := usecases.NewListaTodosPedidos(pedidoRepo, pedido)
+	cadastrarPedido := usecases.NewCadastraPedido(pedidoRepo, pedido)
+	atualizaStatusPedidoUC := usecases.NewAtualizaStatusPedidoUC(pedidoRepo)
+	pegarDetalhePedido := usecases.NewPegaDetalhePedido(pedidoRepo, pedido)
 	token := auth.NewJwtToken()
 	handlersPedido := handlers.NewPedido(validator, listarPedidoPorStatus, listarTodosPedidos, cadastrarPedido, atualizaStatusPedidoUC, pegarDetalhePedido, token)
 	server := http.NewAPIServer(healthCheck, handlersPedido)

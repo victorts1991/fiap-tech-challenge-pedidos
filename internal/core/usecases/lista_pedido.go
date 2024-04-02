@@ -1,11 +1,11 @@
-package usecase
+package usecases
 
 import (
 	"context"
 	"fiap-tech-challenge-pedidos/internal/adapters/repository"
 	"fiap-tech-challenge-pedidos/internal/core/commons"
 	"fiap-tech-challenge-pedidos/internal/core/domain"
-	"fiap-tech-challenge-pedidos/internal/core/usecase/mapper"
+	"fiap-tech-challenge-pedidos/internal/core/usecases/mapper"
 	"fmt"
 	"strings"
 )
