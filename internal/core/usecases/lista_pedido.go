@@ -3,10 +3,10 @@ package usecases
 import (
 	"context"
 	"fiap-tech-challenge-pedidos/internal/adapters/repository"
-	"fiap-tech-challenge-pedidos/internal/core/commons"
 	"fiap-tech-challenge-pedidos/internal/core/domain"
 	"fiap-tech-challenge-pedidos/internal/core/usecases/mapper"
 	"fmt"
+	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/errors"
 	"strings"
 )
 
@@ -59,7 +59,7 @@ func NewListaPedidoPorStatus(repo repository.PedidoRepo, mapperPedido mapper.Ped
 func ValidaStatuses(statuses []string) error {
 	for _, s := range statuses {
 		if !validStatusesSet[strings.ToLower(s)] {
-			return commons.BadRequest.New(fmt.Sprintf("%s não é um status valido", s))
+			return errors.BadRequest.New(fmt.Sprintf("%s não é um status valido", s))
 		}
 	}
 

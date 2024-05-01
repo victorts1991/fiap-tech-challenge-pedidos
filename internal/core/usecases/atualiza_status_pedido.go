@@ -3,9 +3,9 @@ package usecases
 import (
 	"context"
 	"fiap-tech-challenge-pedidos/internal/adapters/repository"
-	"fiap-tech-challenge-pedidos/internal/core/commons"
 	"fiap-tech-challenge-pedidos/internal/core/domain"
 	"fmt"
+	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -24,7 +24,7 @@ func (p atualizaStatusPedido) Atualiza(ctx context.Context, status string, id pr
 	}
 
 	if couldNotUpdateStatus(pedidoDTO.Status) {
-		return commons.BadRequest.New(fmt.Sprintf("não é possível atualizar status de %s para %s", pedidoDTO.Status, status))
+		return errors.BadRequest.New(fmt.Sprintf("não é possível atualizar status de %s para %s", pedidoDTO.Status, status))
 	}
 
 	err = p.repo.AtualizaStatus(ctx, status, id)
@@ -37,7 +37,7 @@ func (p atualizaStatusPedido) Atualiza(ctx context.Context, status string, id pr
 
 func couldNotUpdateStatus(status string) bool {
 	return status == domain.StatusAguardandoPagamento ||
-		status == domain.StatusPagamentoRecusado
+		status == domain.StatusPagamentoRecusado || status == domain.StatusPronto
 }
 
 func NewAtualizaStatusPedidoUC(repo repository.PedidoRepo) AtualizaStatusPedidoUC {

@@ -7,7 +7,6 @@ import (
 type Pedido interface {
 	MapReqToDTO(req *domain.PedidoRequest) *domain.PedidoDTO
 	MapDTOToModels(req []*domain.PedidoDTO) []*domain.Pedido
-	MapDTOToModel(req *domain.PedidoDTO) *domain.Pedido
 	MapDTOToResponse(dto *domain.PedidoDTO) *domain.PedidoResponse
 }
 
@@ -34,11 +33,6 @@ func (p pedido) MapReqToDTO(req *domain.PedidoRequest) *domain.PedidoDTO {
 		Observacao: req.Observacao,
 		Produtos:   req.ProdutoIds,
 	}
-}
-
-func (p pedido) MapDTOToModel(req *domain.PedidoDTO) *domain.Pedido {
-	//TODO implement me
-	panic("implement me")
 }
 
 func (p pedido) MapDTOToModels(req []*domain.PedidoDTO) []*domain.Pedido {

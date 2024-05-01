@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 	"errors"
-	"fiap-tech-challenge-pedidos/internal/core/commons"
 	"fiap-tech-challenge-pedidos/internal/core/domain"
+	_mongo "github.com/rhuandantas/fiap-tech-challenge-commons/pkg/db/mongo"
+	_errors "github.com/rhuandantas/fiap-tech-challenge-commons/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,7 +26,7 @@ type PedidoRepo interface {
 	PesquisaTodos(ctx context.Context) ([]*domain.PedidoDTO, error)
 }
 
-func NewPedidoRepo(connector DBConnector) PedidoRepo {
+func NewPedidoRepo(connector _mongo.MongoDBConnector) PedidoRepo {
 	session := connector.GetDB().Collection(tableNamePedido)
 	return &pedido{
 		session: session,
@@ -79,7 +80,7 @@ func (p *pedido) PesquisaPorID(ctx context.Context, id primitive.ObjectID) (*dom
 	find := p.session.FindOne(ctx, bson.M{"_id": id})
 	if find.Err() != nil {
 		if errors.Is(find.Err(), mongo.ErrNoDocuments) {
-			return nil, commons.NotFound.Wrap(find.Err(), "pedido não encontrado")
+			return nil, _errors.NotFound.Wrap(find.Err(), "pedido não encontrado")
 		}
 
 		return nil, find.Err()

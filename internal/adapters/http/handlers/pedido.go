@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	serverErr "fiap-tech-challenge-pedidos/internal/adapters/http/error"
-	"fiap-tech-challenge-pedidos/internal/adapters/http/middlewares/auth"
-	"fiap-tech-challenge-pedidos/internal/core/commons"
 	"fiap-tech-challenge-pedidos/internal/core/domain"
 	"fiap-tech-challenge-pedidos/internal/core/usecases"
-	"fiap-tech-challenge-pedidos/internal/util"
 	"fmt"
+	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/errors"
+	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/middlewares/auth"
+	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/util"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"strings"
@@ -69,16 +68,16 @@ func (h *Pedido) cadastra(ctx echo.Context) error {
 	)
 
 	if err = ctx.Bind(&req); err != nil {
-		return serverErr.HandleError(ctx, commons.BadRequest.New(err.Error()))
+		return errors.HandleError(ctx, errors.BadRequest.New(err.Error()))
 	}
 
 	if err = h.validatePedidoBody(&req); err != nil {
-		return serverErr.HandleError(ctx, commons.BadRequest.New(err.Error()))
+		return errors.HandleError(ctx, errors.BadRequest.New(err.Error()))
 	}
 
 	response, err := h.cadastraPedidoUC.Cadastra(ctx.Request().Context(), &req)
 	if err != nil {
-		return serverErr.HandleError(ctx, errorx.Cast(err))
+		return errors.HandleError(ctx, errorx.Cast(err))
 	}
 
 	return ctx.JSON(http.StatusCreated, echo.Map{"id": response.Id, "status": response.Status})
@@ -97,7 +96,7 @@ func (h *Pedido) listaPorStatus(ctx echo.Context) error {
 
 	pedidos, err := h.listaPorStatusUC.ListaPorStatus(ctx.Request().Context(), filter)
 	if err != nil {
-		return serverErr.HandleError(ctx, errorx.Cast(err))
+		return errors.HandleError(ctx, errorx.Cast(err))
 	}
 	return ctx.JSON(http.StatusOK, pedidos)
 }
@@ -130,17 +129,17 @@ func (h *Pedido) atualizaStatus(ctx echo.Context) error {
 	)
 
 	if err = ctx.Bind(&status); err != nil {
-		return serverErr.HandleError(ctx, commons.BadRequest.New(err.Error()))
+		return errors.HandleError(ctx, errors.BadRequest.New(err.Error()))
 	}
 
 	id := ctx.Param("id")
 	if pedidoID, err = primitive.ObjectIDFromHex(id); err != nil {
-		return serverErr.HandleError(ctx, commons.BadRequest.New(fmt.Sprintf("%s não é um id válido", id)))
+		return errors.HandleError(ctx, errors.BadRequest.New(fmt.Sprintf("%s não é um id válido", id)))
 	}
 
 	err = h.atualizaStatusUC.Atualiza(ctx.Request().Context(), status.Status, pedidoID)
 	if err != nil {
-		return serverErr.HandleError(ctx, errorx.Cast(err))
+		return errors.HandleError(ctx, errorx.Cast(err))
 	}
 
 	return ctx.JSON(http.StatusOK, status)
@@ -163,12 +162,12 @@ func (h *Pedido) listaDetail(ctx echo.Context) error {
 	id := ctx.Param("id")
 
 	if pedidoID, err = primitive.ObjectIDFromHex(id); err != nil {
-		return serverErr.HandleError(ctx, commons.BadRequest.New(err.Error()))
+		return errors.HandleError(ctx, errors.BadRequest.New(err.Error()))
 	}
 
 	pedido, err := h.pegaDetalhePedidoUC.Pesquisa(ctx.Request().Context(), pedidoID)
 	if err != nil {
-		return serverErr.HandleError(ctx, errorx.Cast(err))
+		return errors.HandleError(ctx, errorx.Cast(err))
 	}
 	return ctx.JSON(http.StatusOK, pedido)
 }
@@ -182,7 +181,7 @@ func (h *Pedido) listaDetail(ctx echo.Context) error {
 func (h *Pedido) listaTodos(ctx echo.Context) error {
 	pedidos, err := h.listaTodosUC.ListaTodos(ctx.Request().Context())
 	if err != nil {
-		return serverErr.HandleError(ctx, errorx.Cast(err))
+		return errors.HandleError(ctx, errorx.Cast(err))
 	}
 	return ctx.JSON(http.StatusOK, pedidos)
 }

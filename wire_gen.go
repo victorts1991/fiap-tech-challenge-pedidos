@@ -9,11 +9,12 @@ package main
 import (
 	"fiap-tech-challenge-pedidos/internal/adapters/http"
 	"fiap-tech-challenge-pedidos/internal/adapters/http/handlers"
-	"fiap-tech-challenge-pedidos/internal/adapters/http/middlewares/auth"
-	"fiap-tech-challenge-pedidos/internal/adapters/repository"
+	repository2 "fiap-tech-challenge-pedidos/internal/adapters/repository"
 	"fiap-tech-challenge-pedidos/internal/core/usecases"
 	"fiap-tech-challenge-pedidos/internal/core/usecases/mapper"
-	"fiap-tech-challenge-pedidos/internal/util"
+	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/db/mongo"
+	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/middlewares/auth"
+	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/util"
 )
 
 // Injectors from wire.go:
@@ -21,8 +22,8 @@ import (
 func InitializeWebServer() (*http.Server, error) {
 	healthCheck := handlers.NewHealthCheck()
 	validator := util.NewCustomValidator()
-	dbConnector := repository.NewMySQLConnector()
-	pedidoRepo := repository.NewPedidoRepo(dbConnector)
+	mongoDBConnector := repository.NewMongoConnector()
+	pedidoRepo := repository2.NewPedidoRepo(mongoDBConnector)
 	pedido := mapper.NewPedidoMapper()
 	listarPedidoPorStatus := usecases.NewListaPedidoPorStatus(pedidoRepo, pedido)
 	listarTodosPedidos := usecases.NewListaTodosPedidos(pedidoRepo, pedido)
