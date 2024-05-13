@@ -23,7 +23,7 @@ func (p atualizaStatusPedido) Atualiza(ctx context.Context, status string, id pr
 		return err
 	}
 
-	if couldNotUpdateStatus(pedidoDTO.Status) {
+	if couldNotUpdateStatus(pedidoDTO.Status, status) {
 		return errors.BadRequest.New(fmt.Sprintf("não é possível atualizar status de %s para %s", pedidoDTO.Status, status))
 	}
 
@@ -35,8 +35,9 @@ func (p atualizaStatusPedido) Atualiza(ctx context.Context, status string, id pr
 	return nil
 }
 
-func couldNotUpdateStatus(status string) bool {
-	return status == domain.StatusAguardandoPagamento ||
+func couldNotUpdateStatus(status, newStatus string) bool {
+	return (status == domain.StatusAguardandoPagamento &&
+		(newStatus != domain.StatusPagamentoAprovado && newStatus != domain.StatusPagamentoRecusado)) ||
 		status == domain.StatusPagamentoRecusado || status == domain.StatusPronto
 }
 
