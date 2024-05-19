@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fiap-tech-challenge-pedidos/client"
 	"fiap-tech-challenge-pedidos/internal/adapters/http"
 	"fiap-tech-challenge-pedidos/internal/adapters/http/handlers"
 	"fiap-tech-challenge-pedidos/internal/adapters/repository"
@@ -29,6 +30,8 @@ func InitializeWebServer() (*http.Server, error) {
 		usecases.NewPegaDetalhePedido,
 		handlers.NewHealthCheck,
 		handlers.NewPedido,
+		client.NewProduto,
+		client.NewCliente,
 		http.NewAPIServer)
 	return &http.Server{}, nil
 }
