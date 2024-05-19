@@ -14,7 +14,8 @@ jobs:
       - name: Unit Tests      
         run: go test -v ./...
 
-  code-analisys:    
+  code-analisys:   
+    needs: unit-test
     name: Code Analisys with SonarCloud
     runs-on: ubuntu-latest
     steps:
