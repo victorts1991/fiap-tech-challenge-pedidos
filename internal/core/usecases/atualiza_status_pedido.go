@@ -27,6 +27,10 @@ func (p atualizaStatusPedido) Atualiza(ctx context.Context, status string, id pr
 		return errors.BadRequest.New(fmt.Sprintf("não é possível atualizar status de %s para %s", pedidoDTO.Status, status))
 	}
 
+	if status == domain.StatusPagamentoAprovado {
+		status = domain.StatusRecebido
+	}
+
 	err = p.repo.AtualizaStatus(ctx, status, id)
 	if err != nil {
 		return err
