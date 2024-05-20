@@ -12,7 +12,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
       - name: Unit Tests      
-        run: go test -v ./...
+        run: go clean -testcache && go test -v ./...
 
   code-analisys:   
     needs: unit-test
@@ -24,7 +24,7 @@ jobs:
       - name: Analyze with SonarCloud
         uses: sonarsource/sonarcloud-github-action@master
         with:
-          projectBaseDir: internal/core/usecase
+          projectBaseDir: internal/core/usecases
           args: >
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
