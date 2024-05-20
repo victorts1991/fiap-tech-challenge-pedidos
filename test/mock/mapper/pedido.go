@@ -39,20 +39,6 @@ func (m *MockPedido) EXPECT() *MockPedidoMockRecorder {
 	return m.recorder
 }
 
-// MapDTOToModel mocks base method.
-func (m *MockPedido) MapDTOToModel(req *domain.PedidoDTO) *domain.Pedido {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MapDTOToModel", req)
-	ret0, _ := ret[0].(*domain.Pedido)
-	return ret0
-}
-
-// MapDTOToModel indicates an expected call of MapDTOToModel.
-func (mr *MockPedidoMockRecorder) MapDTOToModel(req any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MapDTOToModel", reflect.TypeOf((*MockPedido)(nil).MapDTOToModel), req)
-}
-
 // MapDTOToModels mocks base method.
 func (m *MockPedido) MapDTOToModels(req []*domain.PedidoDTO) []*domain.Pedido {
 	m.ctrl.T.Helper()

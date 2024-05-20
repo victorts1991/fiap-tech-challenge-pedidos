@@ -6,6 +6,7 @@ import (
 	"fiap-tech-challenge-pedidos/internal/adapters/repository"
 	"fiap-tech-challenge-pedidos/internal/core/domain"
 	"fiap-tech-challenge-pedidos/internal/core/usecases/mapper"
+	"fmt"
 	"github.com/rhuandantas/fiap-tech-challenge-commons/pkg/errors"
 	"strconv"
 )
@@ -24,11 +25,11 @@ type cadastraPedido struct {
 func (uc cadastraPedido) Cadastra(ctx context.Context, req *domain.PedidoRequest) (*domain.PedidoResponse, error) {
 	err := uc.clienteClient.PesquisaPorID(ctx, strconv.FormatInt(req.ClienteId, 10))
 	if err != nil {
-		return nil, errors.BadRequest.New("cliente id inválido", err.Error())
+		return nil, errors.BadRequest.New(fmt.Sprintf("cliente id inválido %s", err.Error()))
 	}
 	err = uc.produtoClient.PesquisaPorIDS(ctx, req.ProdutoIds)
 	if err != nil {
-		return nil, errors.BadRequest.New("produto id inválido", err.Error())
+		return nil, errors.BadRequest.New(fmt.Sprintf("produto id inválido %s", err.Error()))
 	}
 
 	dto, err := uc.repo.Insere(ctx, uc.mapperPedido.MapReqToDTO(req))
