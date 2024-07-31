@@ -1,6 +1,5 @@
 # fiap-tech-challenge-pedidos
 
-
 ### Tech Challenge 5:
 
 1. Faça o login na plataforma da AWS;
